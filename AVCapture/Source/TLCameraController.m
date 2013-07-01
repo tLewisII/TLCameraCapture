@@ -11,16 +11,19 @@
 #import "TLFocusView.h"
 #import "TLDashedOverlay.h"
 #import "UIImage+Resize.h"
+#import "TLCameraActionView.h"
 #import <AVFoundation/AVFoundation.h>
 
 @interface TLCameraController () <AVCaptureVideoDataOutputSampleBufferDelegate>
-@property(strong, nonatomic) UIViewController *delegate;
+@property(strong, nonatomic) id<TLCameraControllerDelegate> delegate;
+@property(strong,nonatomic)UIView *parentView;
 @property(strong, nonatomic) AVCaptureDeviceInput *device;
 @property(strong, nonatomic) AVCaptureVideoDataOutput *output;
 @property(strong, nonatomic) AVCaptureVideoPreviewLayer *previewLayer;
 @property(strong, nonatomic) TLCameraView *camView;
 @property(strong, nonatomic) AVCaptureSession *session;
 @property(strong, nonatomic) TLFocusView *focusView;
+@property(strong,nonatomic)TLCameraActionView *camActionView;
 @property(strong, nonatomic) AVCaptureStillImageOutput *stillImage;
 @property(strong, nonatomic) UIImageView *imageView;
 @property(strong, nonatomic) UIButton *takePictureButton;
@@ -29,10 +32,11 @@
 
 
 @implementation TLCameraController
-- (instancetype)initWithDelegate:(UIViewController *)delegate {
+- (instancetype)initWithDelegate:(id<TLCameraControllerDelegate>)delegate view:(UIView *)view {
     self = [super init];
     if(self) {
         self.delegate = delegate;
+        self.parentView = view;
         self.view.backgroundColor = [UIColor clearColor];
         [self.view addGestureRecognizer:[[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panView:)]];
 
@@ -64,7 +68,7 @@
     [self.session startRunning];
     [[NSOperationQueue mainQueue]addOperationWithBlock:^{
 
-        [self.view.layer insertSublayer:self.previewLayer below:self.takePictureButton.layer];
+        [self.view.layer insertSublayer:self.previewLayer below:self.camActionView.layer];
         TLDashedOverlay *over = [[TLDashedOverlay alloc]initWithFrame:self.previewLayer.frame];
         over.backgroundColor = [UIColor clearColor];
         over.layer.backgroundColor = (__bridge CGColorRef)([UIColor clearColor]);
@@ -72,7 +76,7 @@
         [self.previewLayer addSublayer:over.layer];
 
         [self.view addGestureRecognizer:[[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(focus:)]];
-        [self.delegate.view addSubview:self.camView];
+        [self.parentView addSubview:self.camView];
         AVCaptureDevice *device = [self.device device];
         NSError *err;
         [device lockForConfiguration:&err];
@@ -119,11 +123,14 @@
         UIImage *croppedImage = [scaledImage croppedImage:CGRectMake((scaledImage.size.width - size.width) / 2, (scaledImage.size.height - size.height) / 2, size.width, size.height)];
         NSLog(@"%@", [NSValue valueWithCGSize:croppedImage.size]);
         self.imageView.image = croppedImage;
-        self.completionBlock(croppedImage);
+        if(self.completionBlock)
+            self.completionBlock(croppedImage);
+        if(self.delegate)
+            [self.delegate pictureFromCamera:croppedImage];
     }];
 }
 
-- (void)pictureTaken:(void (^)(UIImage *image))block {
+- (void)pictureTaken:(TLCameraPictureBlock)block {
     self.completionBlock = [block copy];
 }
 
@@ -132,13 +139,11 @@
     self.camView = [[TLCameraView alloc]initWithFrame:self.view.frame];
     self.camView.backgroundColor = [UIColor blackColor];
     self.view = self.camView;
-    self.takePictureButton = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.view.bounds), CGRectGetMaxY(self.camView.bounds) - 100, 320, 100)];
-    self.takePictureButton.backgroundColor = [UIColor blackColor];
-    self.takePictureButton.alpha = .9;
-    [self.takePictureButton setTitle:@"Picture" forState:UIControlStateNormal];
-    [self.takePictureButton addTarget:self action:@selector(takePicture:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:self.takePictureButton];
-    [self.view.layer addSublayer:self.takePictureButton.layer];
+    self.camActionView = [[TLCameraActionView alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.view.bounds), CGRectGetMaxY(self.camView.bounds) - 100, 320, 100)];
+    [self.view addSubview:self.camActionView];
+    [self.view.layer addSublayer:self.camActionView.layer];
+    [self.camActionView.takePictureButton addTarget:self action:@selector(takePicture:) forControlEvents:UIControlEventTouchUpInside];
+
     NSBlockOperation *block = [[NSBlockOperation alloc]init];
     __weak id weakSelf = self;
     [block addExecutionBlock:^{
@@ -196,8 +201,7 @@
 }
 
 - (void)show {
-    [self.delegate addChildViewController:self];
-    [self.delegate.view addSubview:self.view];
+    [self.parentView addSubview:self.view];
     [UIView animateWithDuration:1 animations:^{
         self.view.frame = CGRectOffset(self.view.frame, 0, -420);
     }];

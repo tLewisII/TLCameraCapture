@@ -14,6 +14,8 @@
 		DB817D61177A492900F67E06 /* TLFocusView.m in Sources */ = {isa = PBXBuildFile; fileRef = DB817D60177A492900F67E06 /* TLFocusView.m */; };
 		DB817D64177A52AC00F67E06 /* TLCameraView.m in Sources */ = {isa = PBXBuildFile; fileRef = DB817D63177A52AC00F67E06 /* TLCameraView.m */; };
 		DB817D67177A565C00F67E06 /* TLCameraController.m in Sources */ = {isa = PBXBuildFile; fileRef = DB817D66177A565C00F67E06 /* TLCameraController.m */; };
+		DBB3C29A17821F510059A747 /* TLCameraActionView.m in Sources */ = {isa = PBXBuildFile; fileRef = DBB3C29917821F510059A747 /* TLCameraActionView.m */; };
+		DBB3C29D178220140059A747 /* TLPictureButton.m in Sources */ = {isa = PBXBuildFile; fileRef = DBB3C29C178220140059A747 /* TLPictureButton.m */; };
 		DBE02D281770CF540089845F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBE02D271770CF540089845F /* UIKit.framework */; };
 		DBE02D2A1770CF540089845F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBE02D291770CF540089845F /* Foundation.framework */; };
 		DBE02D2C1770CF540089845F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBE02D2B1770CF540089845F /* CoreGraphics.framework */; };
@@ -41,6 +43,10 @@
 		DB817D63177A52AC00F67E06 /* TLCameraView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TLCameraView.m; sourceTree = "<group>"; };
 		DB817D65177A565C00F67E06 /* TLCameraController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLCameraController.h; sourceTree = "<group>"; };
 		DB817D66177A565C00F67E06 /* TLCameraController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TLCameraController.m; sourceTree = "<group>"; };
+		DBB3C29817821F510059A747 /* TLCameraActionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLCameraActionView.h; sourceTree = "<group>"; };
+		DBB3C29917821F510059A747 /* TLCameraActionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TLCameraActionView.m; sourceTree = "<group>"; };
+		DBB3C29B178220140059A747 /* TLPictureButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TLPictureButton.h; sourceTree = "<group>"; };
+		DBB3C29C178220140059A747 /* TLPictureButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TLPictureButton.m; sourceTree = "<group>"; };
 		DBE02D241770CF540089845F /* AVCapture.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AVCapture.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DBE02D271770CF540089845F /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		DBE02D291770CF540089845F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -80,6 +86,10 @@
 		DB1B12B6177A7AEF002168CD /* TLImageCapture */ = {
 			isa = PBXGroup;
 			children = (
+				DBB3C29817821F510059A747 /* TLCameraActionView.h */,
+				DBB3C29917821F510059A747 /* TLCameraActionView.m */,
+				DBB3C29B178220140059A747 /* TLPictureButton.h */,
+				DBB3C29C178220140059A747 /* TLPictureButton.m */,
 				DB313799177FC8CB0069150B /* UIImage+Resize.h */,
 				DB31379A177FC8CB0069150B /* UIImage+Resize.m */,
 				DB817D65177A565C00F67E06 /* TLCameraController.h */,
@@ -228,6 +238,8 @@
 				DB817D67177A565C00F67E06 /* TLCameraController.m in Sources */,
 				DB1B12B9177A7F48002168CD /* TLDashedOverlay.m in Sources */,
 				DB31379B177FC8CB0069150B /* UIImage+Resize.m in Sources */,
+				DBB3C29A17821F510059A747 /* TLCameraActionView.m in Sources */,
+				DBB3C29D178220140059A747 /* TLPictureButton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

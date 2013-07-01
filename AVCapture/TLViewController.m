@@ -10,7 +10,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import "TLFocusView.h"
 #import "TLCameraController.h"
-@interface TLViewController () 
+@interface TLViewController () <TLCameraControllerDelegate>
 @property(strong,nonatomic)TLCameraController *camera;
 @end
 
@@ -19,13 +19,12 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
     self.view.backgroundColor = [UIColor grayColor];
     [self.view addGestureRecognizer:[[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(doStuff:)]];
 
 }
 -(void)doStuff:(UITapGestureRecognizer *)r {
-    self.camera = [[TLCameraController alloc]initWithDelegate:self];
+    self.camera = [[TLCameraController alloc]initWithDelegate:self view:self.view];
     [self.camera show];
     [self.camera pictureTaken:^(UIImage *image) {
         NSLog(@"%@",@(image != nil));
@@ -35,5 +34,4 @@
 -(void)pictureFromCamera:(UIImage *)image {
     
 }
-
 @end

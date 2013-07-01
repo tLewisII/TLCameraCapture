@@ -25,18 +25,14 @@
     CGFloat bezierPattern[] = {4, 4, 4, 4};
     [bezierPath setLineDash:bezierPattern count:4 phase:0];
     [bezierPath stroke];
-//    //// Color Declarations
-//    UIColor* fillColor2 = [UIColor colorWithRed: 0.5 green: 0.5 blue: 0.5 alpha: 1];
-//    
-//    
-//    
-//    //// swipeArrow Drawing
-//    UIBezierPath* swipeArrowPath = [UIBezierPath bezierPath];
-//    [swipeArrowPath moveToPoint: CGPointMake(CGRectGetMinX(frame) + 120, CGRectGetMinY(frame))];
-//    [swipeArrowPath addLineToPoint: CGPointMake(CGRectGetMinX(frame) + 160, CGRectGetMinY(frame) + 10)];
-//    [swipeArrowPath addLineToPoint: CGPointMake(CGRectGetMinX(frame) + 200, CGRectGetMinY(frame))];
-//    [fillColor2 setStroke];
-//    swipeArrowPath.lineWidth = 5;
-//    [swipeArrowPath stroke];
+    
+    //// swipeArrow Drawing
+    UIBezierPath* swipeArrowPath = [UIBezierPath bezierPath];
+    [swipeArrowPath moveToPoint: CGPointMake(CGRectGetMinX(frame) + 135, CGRectGetMinY(frame) + 2)];
+    [swipeArrowPath addLineToPoint: CGPointMake(CGRectGetMinX(frame) + 160, CGRectGetMinY(frame) + 8)];
+    [swipeArrowPath addLineToPoint: CGPointMake(CGRectGetMinX(frame) + 185, CGRectGetMinY(frame) + 2)];
+    [strokeColor setStroke];
+    swipeArrowPath.lineWidth = 5;
+    [swipeArrowPath stroke];
 }
 @end
