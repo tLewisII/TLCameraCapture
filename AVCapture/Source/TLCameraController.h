@@ -19,6 +19,6 @@ typedef void(^TLCameraPictureBlock)(UIImage *image);
 
 - (void)show;
 
-- (void)pictureTaken:(TLCameraPictureBlock)block;
+- (void)pictureTaken:(void(^)(UIImage *image))block;
 @end
 

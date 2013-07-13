@@ -27,11 +27,7 @@
     self.camera = [[TLCameraController alloc]initWithDelegate:self view:self.view];
     [self.camera show];
     [self.camera pictureTaken:^(UIImage *image) {
-        NSLog(@"%@",@(image != nil));
-        NSLog(@"DFHSDGSG");
+        NSLog(@"Image recieved");
     }];
-}
--(void)pictureFromCamera:(UIImage *)image {
-    
 }
 @end

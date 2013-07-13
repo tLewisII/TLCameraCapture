@@ -27,6 +27,7 @@
 @property(strong, nonatomic) AVCaptureStillImageOutput *stillImage;
 @property(strong, nonatomic) UIImageView *imageView;
 @property(strong, nonatomic) UIButton *takePictureButton;
+@property(nonatomic)CGPoint originalCenter;
 @property(copy) void(^completionBlock)(UIImage *image);
 @end
 
@@ -71,7 +72,7 @@
         [self.view.layer insertSublayer:self.previewLayer below:self.camActionView.layer];
         TLDashedOverlay *over = [[TLDashedOverlay alloc]initWithFrame:self.previewLayer.frame];
         over.backgroundColor = [UIColor clearColor];
-        over.layer.backgroundColor = (__bridge CGColorRef)([UIColor clearColor]);
+        over.layer.backgroundColor = [UIColor clearColor].CGColor;
         [self.view addSubview:over];
         [self.previewLayer addSublayer:over.layer];
 
@@ -102,17 +103,6 @@
         }
         if(videoConnection) {break;}
     }
-    CATransition *shutterAnimation = [CATransition animation];
-    [shutterAnimation setDelegate:self];
-    [shutterAnimation setDuration:0.6];
-    
-    shutterAnimation.timingFunction = UIViewAnimationCurveEaseInOut;
-    [shutterAnimation setType:@"cameraIris"];
-    [shutterAnimation setValue:@"cameraIris" forKey:@"cameraIris"];
-    CALayer *cameraShutter = [[CALayer alloc]init];
-    [cameraShutter setBounds:self.previewLayer.bounds];
-    [self.previewLayer addSublayer:cameraShutter];
-    [self.previewLayer addAnimation:shutterAnimation forKey:@"cameraIris"];
     [self.stillImage captureStillImageAsynchronouslyFromConnection:videoConnection completionHandler:^(CMSampleBufferRef imageDataSampleBuffer, NSError *error) {
         NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer];
         UIImage *image = [[UIImage alloc]initWithData:imageData];
@@ -125,12 +115,12 @@
         self.imageView.image = croppedImage;
         if(self.completionBlock)
             self.completionBlock(croppedImage);
-        if(self.delegate)
+        if(self.delegate != nil && [self.delegate respondsToSelector:@selector(pictureFromCamera:)])
             [self.delegate pictureFromCamera:croppedImage];
     }];
 }
 
-- (void)pictureTaken:(TLCameraPictureBlock)block {
+- (void)pictureTaken:(void(^)(UIImage *image))block {
     self.completionBlock = [block copy];
 }
 
@@ -139,7 +129,8 @@
     self.camView = [[TLCameraView alloc]initWithFrame:self.view.frame];
     self.camView.backgroundColor = [UIColor blackColor];
     self.view = self.camView;
-    self.camActionView = [[TLCameraActionView alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.view.bounds), CGRectGetMaxY(self.camView.bounds) - 100, 320, 100)];
+    self.originalCenter = self.view.center;
+    self.camActionView = [[TLCameraActionView alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.view.bounds), CGRectGetMaxY(self.camView.bounds) - 106, 320, 100)];
     [self.view addSubview:self.camActionView];
     [self.view.layer addSublayer:self.camActionView.layer];
     [self.camActionView.takePictureButton addTarget:self action:@selector(takePicture:) forControlEvents:UIControlEventTouchUpInside];
@@ -155,11 +146,11 @@
 - (void)panView:(UIPanGestureRecognizer *)recognizer {
     CGPoint translation = [recognizer translationInView:recognizer.view];
     CGPoint velocity = [recognizer velocityInView:recognizer.view];
-    if(velocity.y > 0) {
-        recognizer.view.center = CGPointMake(recognizer.view.center.x, translation.y + recognizer.view.center.y);
+   
+        recognizer.view.center = CGPointMake(recognizer.view.center.x, MAX(translation.y + recognizer.view.center.y, self.originalCenter.y));
         [recognizer setTranslation:CGPointZero inView:recognizer.view];
-    }
-    if(recognizer.state == UIGestureRecognizerStateEnded) {
+   
+    if(recognizer.state == UIGestureRecognizerStateEnded && velocity.y > 0) {
         [UIView animateWithDuration:.5 animations:^{
             self.view.frame = CGRectOffset(self.view.frame, 0, 450);
         }                completion:^(BOOL finished) {
@@ -206,7 +197,9 @@
         self.view.frame = CGRectOffset(self.view.frame, 0, -420);
     }];
 }
-
+-(void)showChoiceView {
+    
+}
 - (CGPoint)convertToPointOfInterestFromViewCoordinates:(CGPoint)viewCoordinates {
     CGPoint pointOfInterest = CGPointMake(.5f, .5f);
     CGSize frameSize = self.camView.frame.size;
