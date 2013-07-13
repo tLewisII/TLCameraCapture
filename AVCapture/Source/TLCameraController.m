@@ -149,8 +149,8 @@
    
         recognizer.view.center = CGPointMake(recognizer.view.center.x, MAX(translation.y + recognizer.view.center.y, self.originalCenter.y));
         [recognizer setTranslation:CGPointZero inView:recognizer.view];
-   
-    if(recognizer.state == UIGestureRecognizerStateEnded && velocity.y > 0) {
+   ///Do not dismiss the view unless it moves at least 75 points from the original center.
+    if(recognizer.state == UIGestureRecognizerStateEnded && velocity.y > 0 && (recognizer.view.center.y - self.originalCenter.y) > 75) {
         [UIView animateWithDuration:.5 animations:^{
             self.view.frame = CGRectOffset(self.view.frame, 0, 450);
         }                completion:^(BOOL finished) {
@@ -163,6 +163,12 @@
             self.camView = nil;
         }];
     }
+    ///Return the view to the top position.
+    else if(recognizer.state == UIGestureRecognizerStateEnded) {
+        [UIView animateWithDuration:.227 animations:^{
+            self.view.center = self.originalCenter;
+        }];
+    }
 }
 
 - (void)focus:(UITapGestureRecognizer *)recog {
@@ -171,12 +177,12 @@
     CGPoint point = [recog locationInView:self.view];
     if(CGRectContainsPoint(self.previewLayer.bounds, point)) {
         if(!self.focusView) {
-            self.focusView = [[TLFocusView alloc]initWithFrame:CGRectMake(point.x, point.y, 75, 75)];
+            self.focusView = [[TLFocusView alloc]initWithFrame:CGRectMake(point.x - 50, point.y - 50, 100, 100)];
             [self.view addSubview:self.focusView];
             [self.view.layer addSublayer:self.focusView.layer];
         }
         else {
-            self.focusView.frame = CGRectMake(point.x, point.y, 75, 75);
+            self.focusView.frame = CGRectMake(point.x - 50, point.y - 50, 100, 100);
         }
         if([device isFocusPointOfInterestSupported] && [device isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus] && [device isExposurePointOfInterestSupported] && [device isExposureModeSupported:AVCaptureExposureModeContinuousAutoExposure]) {
             BOOL lock = [device lockForConfiguration:&err];
